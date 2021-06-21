@@ -3,7 +3,7 @@ line_point = []*4
 line_pos = []*4
 
 # ビルの座標
-buil_pos = [[-10, 200, 200, 400], [300, 50, 200, 550], [550, 100, 300, 500]]
+buil_pos = [[-10, 200, 200, 400], [550, 100, 300, 500], [300, 50, 200, 550], ]
 
 # カウンタ類
 counter = 0
@@ -44,16 +44,16 @@ def draw():
     elif counter==1:
         if build_counter==0:
             frame = frameCount
-            buil_time = [frame+60, frame+120, frame+240]
+            buil_time = [frame, frame+60, frame+120, frame+180]
             build_counter=1
         elif build_counter==1:
             if buil_time[0]>=frameCount:
-                draw_build(0, frameCount-240)
+                draw_build(0, frameCount)
             elif buil_time[1]>=frameCount:  
-                draw_build(1,frameCount-240)
+                draw_build(1,frameCount)
             elif buil_time[2]>=frameCount:
-                draw_build(2, frameCount-240)
-            elif frameCount-240>=240:
+                draw_build(2, frameCount)
+            elif buil_time[3]>=frameCount:
                 draw_build(3, 100)
                 build_counter=2
         elif build_counter==2:
@@ -62,20 +62,27 @@ def draw():
             counter==2
 
 # ビルの描写    
-def draw_build(mode, frame_r):
-    print(frame_r)
-    rate=float(frame_r)/240
-    print(rate)
+def draw_build(mode, frame_re):
+    frame_re-=180+10
+    def rate_cal(buil):
+        if buil==0:
+            rate=float(frame_re)/180
+        elif buil==1:
+            rate=(float(frame_re)-60)/120
+            print(rate)
+        else:
+            rate=(float(frame_re)-120)/60
+        return rate
     fill(100)
     if mode==0:
-        rect(buil_pos[0][0], buil_pos[0][1], buil_pos[0][2], buil_pos[0][3]*rate)
+        rect(buil_pos[0][0], buil_pos[0][1], buil_pos[0][2], buil_pos[0][3]*rate_cal(0))
     elif mode==1:
-        rect(buil_pos[0][0], buil_pos[0][1], buil_pos[0][2], buil_pos[0][3]*rate)
-        rect(buil_pos[1][0], buil_pos[1][1], buil_pos[1][2], buil_pos[1][3]*rate)
+        rect(buil_pos[0][0], buil_pos[0][1], buil_pos[0][2], buil_pos[0][3]*rate_cal(0))
+        rect(buil_pos[1][0], buil_pos[1][1], buil_pos[1][2], buil_pos[1][3]*rate_cal(1))
     elif mode==2:
-        rect(buil_pos[0][0], buil_pos[0][1], buil_pos[0][2], buil_pos[0][3]*rate)
-        rect(buil_pos[1][0], buil_pos[1][1], buil_pos[1][2], buil_pos[1][3]*rate)
-        rect(buil_pos[2][0], buil_pos[2][1], buil_pos[2][2], buil_pos[2][3]*rate)
+        rect(buil_pos[0][0], buil_pos[0][1], buil_pos[0][2], buil_pos[0][3]*rate_cal(0))
+        rect(buil_pos[1][0], buil_pos[1][1], buil_pos[1][2], buil_pos[1][3]*rate_cal(1))
+        rect(buil_pos[2][0], buil_pos[2][1], buil_pos[2][2], buil_pos[2][3]*rate_cal(2))
     elif mode==3:
         rect(buil_pos[0][0], buil_pos[0][1], buil_pos[0][2], buil_pos[0][3])
         rect(buil_pos[1][0], buil_pos[1][1], buil_pos[1][2], buil_pos[1][3])
