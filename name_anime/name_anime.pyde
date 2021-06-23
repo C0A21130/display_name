@@ -38,7 +38,7 @@ def setup():
     window_set()   # 窓の座標と色を設定
      
 def draw(): 
-    global line_pos, counter, build_counter, build_end, build_window_time, name_counter, name_start, name_end, name_change
+    global line_pos, counter, build_counter, build_end, window_time, name_counter, name_start, name_end, name_change
     
     if counter==0 and frameCount%1 == 0: # 1フレームレートごとに描画
         strokeWeight(3) 
@@ -67,8 +67,8 @@ def draw():
     elif counter==1: # ビルと窓の描写の映像レイヤー
         background(0)  
         if build_counter==0: 
-            build_end = frameCount+160
-            build_window_time = [frameCount+180, frameCount+210, frameCount+240]
+            build_end = frameCount+120
+            window_time = [frameCount+130, frameCount+160, frameCount+190, frameCount+250]
             build_counter=1 
         elif build_counter==1: # ビル本体の描写
             if frameCount==build_end:
@@ -78,13 +78,17 @@ def draw():
                 draw_build(1) 
         elif build_counter==2: # 窓の描写
             draw_build(2)
-            if frameCount>=build_window_time[2]:
-                draw_window(3) # ２番目のビルに窓を描写
+            if frameCount>=window_time[3]:
+                draw_window(3) # １と２と３番目のビルに窓を描写 
                 counter=2      # 次の映像レイヤーに移動
-            elif frameCount>=build_window_time[1]:
-                draw_window(2) # ３番目のビルに窓を描写
-            elif frameCount>=build_window_time[0]:
+            elif frameCount>=window_time[2]:
+                draw_window(3) # １と２と３番目のビルに窓を描写    
+            elif frameCount>=window_time[1]:
+                draw_window(2) # １と３番目のビルに窓を描写
+            elif frameCount>=window_time[0]:
                 draw_window(1) # １番目のビルに窓を描写
+
+    # 名前を表示するアニメーション
     elif counter==2:
         background(0)
         draw_build(2)
@@ -107,7 +111,7 @@ def draw():
  
 # ビルの描写をする関数
 def draw_build(mode): 
-    rate =(float(frameCount)-250)/160
+    rate =(float(frameCount)-250)/120
     if mode==1: 
         noStroke()
         fill(255)
