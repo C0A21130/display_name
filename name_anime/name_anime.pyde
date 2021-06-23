@@ -3,7 +3,7 @@ counter = 0                  # 映像レイヤーのカウンタ
 build_counter=0              # 今ビルが建っているカウンタ
 name_counter = 0             # 名前が出来上がるカウンタ
 build_end_time = 0           # ビルが建ち終わるタイミング
-build_window_time = [255, 0] # ビルの窓ができるタイミング
+build_window_time = [0]*4    # ビルの窓ができるタイミング
 name_start = 0               # 名前のアニメーションがかかるタイミングを保存
 name_end = 0                 # 名前のアニメーションが終わるタイミングを保存
 name_change = 0
@@ -16,15 +16,15 @@ line_pos = [0]*4   # 現在の線の座標を初期化
 buil_pos = [[-10, 200, 200, 400], [300, 150, 200, 450], [550, 100, 300, 500]] # ビルの位置座標：[[１番ビル][２番ビル][３番ビル]]：[x, y, w, h]
 window_pos=[[30, 210], [340, 170], [600, 150]] # ビルの窓の座標：[[１番ビルの窓][２番ビルの窓][３番ビルの窓]]
 window_init_pos=[[30, 210], [340, 170], [600, 150]] # ビルの窓の座標：[[１番ビルの窓][２番ビルの窓][３番ビルの窓]]
-window = [[[0]*2, [0]*20, [""]*20], [[0]*2, [0]*20, [""]*20], [[0]*2, [0]*20, [""]*20]]
-                           
+window = [[[0]*2, [0]*20, [""]*20], [[0]*2, [0]*20, [""]*20], [[0]*2, [0]*20, [""]*20]]                    
 
 # 名前のアニメーションの座標系
 eff_line_point = [[240,200],[240,400],[390,400],[390,200]]
 eff_line_pos = [[240,200],[240,400],[390,400],[390,200]]
 eff_box_pos = [[80,200,150,200], [410,200,150, 200]]
 eff_pos = [570,200]
-name_point = [[], [], [], []] # 名前の目標座標：[[Y], [U], [K], [I]]
+name_point = [[[80,200],[125,300],[155,300],[230,200],[80, 400]], [[240, 200],[240, 360],[270,400],[390,400],[390,200]],
+              [[410,200],[410,400],[560,200],[465,300],[410,300],[560, 400]], [[570,200],[645,200],[720,210],[645,400],[570,400],[720, 400]]] # 名前の目標座標：[[Y], [U], [K], [I]]
 name_pos = [[], [], [], []]   # 名前の現在座標：[[Y], [U], [K], [I]]
 moon = [[0, 0, 0], [0, 0, 0]] # 三日月の座標：[[光], [影]]:[]
 under_line = [0, 0, 0, 0]
@@ -101,6 +101,7 @@ def draw():
                 draw_eff()
             elif frameCount>=name_change:
                 draw_name(1)
+                noLoop()
             elif frameCount>=name_end:
                 draw_name(2)
  
@@ -233,12 +234,31 @@ def draw_eff():
         for n in range(a):
             ellipse(eff_pos[0]+i*30, eff_pos[1]+n*22, 7, 7)
 
-# def draw_name():
-#     rate = float(frameCount-492)/150
-#     print(rate)
-#     if mode ==1:
+def draw_name(mode):
+    rate = float(frameCount-492)/150
+    print(rate)
+    if mode ==1:
+        strokeWeight(3)
+        stroke(255)
+        line(name_point[0][0][0], name_point[0][0][1], name_point[0][1][0], name_point[0][1][1])
+        line(name_point[0][1][0], name_point[0][1][1], name_point[0][2][0], name_point[0][2][1])
+        line(name_point[0][3][0], name_point[0][3][1], name_point[0][4][0], name_point[0][4][1])
         
-#     elif mode==2:
-    
+        line(name_point[1][0][0], name_point[1][0][1], name_point[1][1][0], name_point[1][1][1])
+        line(name_point[1][1][0], name_point[1][1][1], name_point[1][2][0], name_point[1][2][1])
+        line(name_point[1][2][0], name_point[1][2][1], name_point[1][3][0], name_point[1][3][1])  
+        line(name_point[1][3][0], name_point[1][3][1], name_point[1][4][0], name_point[1][4][1])
+        
+        line(name_point[2][0][0], name_point[2][0][1], name_point[2][1][0], name_point[2][1][1])
+        line(name_point[2][2][0], name_point[2][2][1], name_point[2][3][0], name_point[2][3][1])  
+        line(name_point[2][3][0], name_point[2][3][1], name_point[2][4][0], name_point[2][4][1])
+        line(name_point[2][4][0], name_point[2][4][1], name_point[2][5][0], name_point[2][5][1])
+        
+        line(name_point[3][0][0], name_point[3][0][1], name_point[3][1][0], name_point[3][1][1])
+        line(name_point[3][1][0], name_point[3][1][1], name_point[3][2][0], name_point[3][2][1])
+        line(name_point[3][1][0], name_point[3][1][1], name_point[3][3][0], name_point[3][3][1])  
+        line(name_point[3][4][0], name_point[3][4][1], name_point[3][5][0], name_point[3][5][1])
+    elif mode==2:
+        print("33")
     
     
