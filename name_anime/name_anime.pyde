@@ -4,11 +4,13 @@ build_counter=0              # 今ビルが建っているカウンタ
 name_counter = 0             # 名前が出来上がるカウンタ
 build_end_time = 0           # ビルが建ち終わるタイミング
 build_window_time = [255, 0] # ビルの窓ができるタイミング
-
+name_start = 0               # 名前のアニメーションがかかるタイミングを保存
+name_end = 0                 # 名前のアニメーションが終わるタイミングを保存
+name_change = 0
 
 # 四角の線の座標
-line_point = []*4 # 目標とする線の座標を初期化
-line_pos = []*4   # 現在の線の座標を初期化
+line_point = [0]*4 # 目標とする線の座標を初期化
+line_pos = [0]*4   # 現在の線の座標を初期化
 
 # ビル系の座標 
 buil_pos = [[-10, 200, 200, 400], [300, 150, 200, 450], [550, 100, 300, 500]] # ビルの位置座標：[[１番ビル][２番ビル][３番ビル]]：[x, y, w, h]
@@ -18,10 +20,12 @@ window = [[[0]*2, [0]*20, [""]*20], [[0]*2, [0]*20, [""]*20], [[0]*2, [0]*20, ["
                            
 
 # 名前のアニメーションの座標系
-eff_point = [[200,300,40,80], [0,0,0,0,0,0,0,0,0], [400,300,40,80], [0,0]]
-eff_pos = [[], [], [], []]
+eff_line_point = [[240,200],[240,400],[390,400],[390,200]]
+eff_line_pos = [[240,200],[240,400],[390,400],[390,200]]
+eff_box_pos = [[80,200,150,200], [410,200,150, 200]]
+eff_pos = [570,200]
 name_point = [[], [], [], []] # 名前の目標座標：[[Y], [U], [K], [I]]
-name_pos = [[], [], [], []] # 名前の現在座標：[[Y], [U], [K], [I]]
+name_pos = [[], [], [], []]   # 名前の現在座標：[[Y], [U], [K], [I]]
 moon = [[0, 0, 0], [0, 0, 0]] # 三日月の座標：[[光], [影]]:[]
 under_line = [0, 0, 0, 0]
  
@@ -31,15 +35,14 @@ def setup():
     size(800, 600) # 800X600のウィンドウを作成
     line_point = [[40, 40], [width-40, 40], [width-40, height-40], [40, height-40]] # 目標とする線の座標を設定
     line_pos = [[40, 40], [width-40, 40], [width-40, height-40], [40, height-40]]   # 現在の線の座標を設定
-    window_set()
-    print(window)
+    window_set()   # 窓の座標と色を設定
      
 def draw(): 
-    global line_pos, counter, build_counter, build_end, build_window_time, name_counter
+    global line_pos, counter, build_counter, build_end, build_window_time, name_counter, name_start, name_end, name_change
     
-    strokeWeight(3) 
-    stroke(40) 
     if counter==0 and frameCount%1 == 0: # 1フレームレートごとに描画
+        strokeWeight(3) 
+        stroke(40)
         background(255)
         for i in range(100): 
             n = sin(i+frameCount//5)*30 
@@ -69,34 +72,39 @@ def draw():
             build_counter=1 
         elif build_counter==1: # ビル本体の描写
             if frameCount==build_end:
-                print("building")
                 draw_build(2) 
                 build_counter=2 
             else:
-                # print(frameCount)
                 draw_build(1) 
         elif build_counter==2: # 窓の描写
             draw_build(2)
             if frameCount>=build_window_time[2]:
                 draw_window(3) # ２番目のビルに窓を描写
-                # 次の映像レイヤーに移動
+                counter=2      # 次の映像レイヤーに移動
             elif frameCount>=build_window_time[1]:
                 draw_window(2) # ３番目のビルに窓を描写
             elif frameCount>=build_window_time[0]:
                 draw_window(1) # １番目のビルに窓を描写
-    # elif counter==2:
-    #     print("eeee")
-    #     if name_counter==0:
-    #         draw_build(3)
-    #         draw_window(3)
-    #         name_counter=1
-    #     elif name_counter==1:
-    #         draw_eff()
-    #         draw_name()           
-    #     background(0)
-
+    elif counter==2:
+        background(0)
+        draw_build(2)
+        draw_window(3)
+        fill(0, 128)
+        rect(0, 0, width, height)
+        if name_counter==0:
+            name_start = frameCount+60 
+            name_change = frameCount+80
+            name_end = frameCount+235
+            name_counter=1
+        elif name_counter==1:
+            if frameCount>=name_start and frameCount<name_change:
+                draw_eff()
+            elif frameCount>=name_change:
+                draw_name(1)
+            elif frameCount>=name_end:
+                draw_name(2)
  
-# ビルの描写     
+# ビルの描写をする関数
 def draw_build(mode): 
     rate =(float(frameCount)-250)/160
     if mode==1: 
@@ -129,15 +137,15 @@ def change_window_color():
     else:
         return 0         # 窓の色を黒色に設定
 
-# 窓の色をセット
+# 窓の座標と色をセットする関数
 def window_set():
     global window1
+    noStroke()
     for i in range(20):
         if i<=9:
             window[0][1][i] = window_init_pos[0][1]+50*i # １番ビルの左側のy座標を設定
             window[1][1][i] = window_init_pos[1][1]+55*i # ２番ビルの左側のy座標を設定
             window[2][1][i] = window_init_pos[2][1]+80*i # ３番ビルの左側のy座標を設定
-
         else:
             window[0][1][i] = window_init_pos[0][1]+50*(i-10) # １番ビルの右側のy座標を設定
             window[1][1][i] = window_init_pos[1][1]+55*(i-10) # ２番ビルの右側のy座標を設定
@@ -149,7 +157,6 @@ def window_set():
         window[0][0][n] = window_init_pos[0][0]+100*n # １番ビルのx座標を設定
         window[1][0][n] = window_init_pos[1][0]+100*n # ２番ビルのx座標を設定
         window[2][0][n] = window_init_pos[2][0]+110*n # ３番ビルのx座標を設定
-
         
 # 窓の描写 
 def draw_window(mode):
@@ -178,9 +185,60 @@ def draw_window(mode):
         print("mode_errer") # 例外処理
     draw_build_sub() # ３番ビルの左側を削る
         
-# def draw_eff():
-#     print(frameCount)
-    
+def draw_eff():
+    rate = (float(frameCount)-550)/60
+    noStroke()
+    fill(255)
+    rect(eff_box_pos[0][0], eff_box_pos[0][1], eff_box_pos[0][2]*rate, eff_box_pos[0][3])
+    if frameCount%1==0:
+        if eff_line_pos[0][1]<eff_line_point[1][1]:   # 最初：左上　目標：右上
+            eff_line_pos[0][1] += 20
+        elif eff_line_pos[1][0]<eff_line_point[2][0]: # 最初：右上　目標：右下
+            eff_line_pos[1][0] += 15
+        elif eff_line_pos[2][1]>eff_line_point[3][1]: # 最初：右下　目標：左下
+            eff_line_pos[2][1] -= 20 
+        elif eff_line_pos[3][0]>eff_line_point[0][0]: # 最初：左下　目標：左上
+            eff_line_pos[3][0] -= 15
+        strokeWeight(3)
+        stroke(255)
+        line(eff_line_point[0][0], eff_line_point[0][1], eff_line_pos[0][0], eff_line_pos[0][1]) # 上の線
+        line(eff_line_point[1][0], eff_line_point[1][1], eff_line_pos[1][0], eff_line_pos[1][1]) # 右の線
+        line(eff_line_point[2][0], eff_line_point[2][1], eff_line_pos[2][0], eff_line_pos[2][1]) # 下の線
+        line(eff_line_point[3][0], eff_line_point[3][1], eff_line_pos[3][0], eff_line_pos[3][1]) # 左の線
+    noStroke()
+    fill(255)
+    rect(eff_box_pos[1][0], eff_box_pos[1][1], eff_box_pos[1][2], eff_box_pos[1][3]*rate)
+    a=0
+    if frameCount-550<=6:
+        a=1
+    elif frameCount-550<=12:
+        a=2
+    elif frameCount-550<=18:
+        a=3
+    elif frameCount-550<=24:
+        a=4
+    elif frameCount-550<=30:
+        a=5
+    elif frameCount-550<=36:
+        a=6
+    elif frameCount-550<=42:
+        a=7
+    elif frameCount-550<=48:
+        a=8
+    elif frameCount-550<=54:
+        a=9
+    elif frameCount-550<=60:
+        a=10
+    for i in range(5):
+        for n in range(a):
+            ellipse(eff_pos[0]+i*30, eff_pos[1]+n*22, 7, 7)
 
 # def draw_name():
-#     print("n")
+#     rate = float(frameCount-492)/150
+#     print(rate)
+#     if mode ==1:
+        
+#     elif mode==2:
+    
+    
+    
