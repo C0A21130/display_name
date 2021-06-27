@@ -151,15 +151,18 @@ def change_window_color():
 # 月の座標を時間で設定
 def moon_set():
     global moon
-    now = hour()
-    x = 50+(700/24)*now
+    h = 24
+    m = 0
+    x = 50+700*(h/24)
+    y = 40+30*(m/60)
     moon[0][0] = x
     moon[1][0] = x-5
-    moon[0][1] = 50
-    moon[1][1] = 50-5
+    moon[0][1] = y
+    moon[1][1] = y-5
     
 # moon変数で設定された座標に月を描写
 def draw_moon():
+    moon_set()
     noStroke()
     fill("#ffff7f")
     ellipse(moon[0][0], moon[0][1], moon[0][2], moon[0][2])
