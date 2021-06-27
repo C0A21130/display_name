@@ -1,5 +1,5 @@
 # カウンタやタイミング類の初期化
-counter = 1                # 映像レイヤーのカウンタ
+counter = 1                  # 映像レイヤーのカウンタ
 build_counter=0              # 今ビルが建っているカウンタ
 name_counter = 0             # 名前が出来上がるカウンタ
 build_end_time = 0           # ビルが建ち終わるタイミングを保存
@@ -89,12 +89,12 @@ def draw():
                 draw_name(1) # 時間ごとに下線が変化する名前を描写
             elif frameCount>=eff_start:
                 draw_eff()   # エフェクトを描写
-            # else:
-            #     draw_name(2) # 名前を常に描写
+            else:
+                draw_name(2) # 名前を常に描写
             
  
 # ビルの描写をする関数
-def draw_build(mode):
+def draw_build(mode): 
     rate =(float(frameCount)-1)/120
     noStroke()
     fill("#eeeeee")
@@ -127,8 +127,8 @@ def change_window_color():
 # 月の座標を時間で設定
 def moon_set():
     global moon
-    h = 24
-    m = 0
+    h = hour()
+    m = minute()
     x = 50+700*(h/24)
     y = 40+30*(m/60)
     moon[0][0] = x
@@ -138,7 +138,6 @@ def moon_set():
     
 # moon変数で設定された座標に月を描写
 def draw_moon():
-    moon_set()
     noStroke()
     fill("#ffff7f")
     ellipse(moon[0][0], moon[0][1], moon[0][2], moon[0][2])
@@ -196,15 +195,14 @@ def draw_window(mode):
 
 # 名前を表示する前のエフェクト        
 def draw_eff():
-    frame=276
     rate=0 # rateを初期化
     # rate変数を正の数かつ１以下になるように調整
-    if (float(frameCount)-frame)/60<=0:   # rate変数が負の時に０
+    if (float(frameCount)-276)/60<=0:   # rate変数が負の時に０
         rate=0
-    elif (float(frameCount)-frame)/60>=1: # rate変数が1以上の時に１
+    elif (float(frameCount)-276)/60>=1: # rate変数が1以上の時に１
         rate=1
     else:                               # 60フレーム分の今のフレームの割合をrate変数に代入
-        rate=(float(frameCount)-frame)/60 
+        rate=(float(frameCount)-276)/60 
     # Yの位置に左から右へ四角形が伸びるアニメーション
     noStroke()
     fill(255)
@@ -231,23 +229,23 @@ def draw_eff():
     rect(eff_box_pos[1][0], eff_box_pos[1][1], eff_box_pos[1][2], eff_box_pos[1][3]*rate)
     # Iの位置に●を最大５０個描写
     a=0 # aを初期化
-    if frameCount-frame<=6: # 6フレーム事にaの値を増やして描写する丸５個ずつ増やす
+    if frameCount-276<=6: # 6フレーム事にaの値を増やして描写する丸５個ずつ増やす
         a=1  # aを1に設定
-    elif frameCount-frame<=12: # 12フレーム
+    elif frameCount-276<=12: # 12フレーム
         a=2  # aを2に設定
-    elif frameCount-frame<=18: # 18フレーム
+    elif frameCount-276<=18: # 18フレーム
         a=3  # aを3に設定
-    elif frameCount-frame<=24: # 24フレーム
+    elif frameCount-276<=24: # 24フレーム
         a=4  # aを4に設定
-    elif frameCount-frame<=30: # 30フレーム
+    elif frameCount-276<=30: # 30フレーム
         a=5  # aを5に設定
-    elif frameCount-frame<=36: # 36フレーム
+    elif frameCount-276<=36: # 36フレーム
         a=6  # aを6に設定
-    elif frameCount-frame<=42: # 42フレーム
+    elif frameCount-276<=42: # 42フレーム
         a=7  # aを7に設定
-    elif frameCount-frame<=48: # 48フレーム
+    elif frameCount-276<=48: # 48フレーム
         a=8  # aを8に設定
-    elif frameCount-frame<=54: # 54フレーム
+    elif frameCount-276<=54: # 54フレーム
         a=9  # aを9に設定
     else:                    # 60フレーム
         a=10 # aを10に設定
@@ -257,14 +255,13 @@ def draw_eff():
 
 # 名前を表示するアニメーション
 def draw_name(mode):
-    frame=351
     rate=0
-    if float(frameCount-frame)/80<0:
+    if float(frameCount-351)/80<0:
         rate=0
-    elif float(frameCount-frame)/80>=1:
+    elif float(frameCount-351)/80>=1:
         rate=1
     else:
-        rate=float(frameCount-frame)/80
+        rate=float(frameCount-351)/80
     if mode ==1:
         strokeWeight(3)
         stroke("#ffffff")
