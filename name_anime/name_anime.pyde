@@ -1,5 +1,5 @@
 # カウンタやタイミング類の初期化
-counter = 0                  # 映像レイヤーのカウンタ
+counter = 1                # 映像レイヤーのカウンタ
 build_counter=0              # 今ビルが建っているカウンタ
 name_counter = 0             # 名前が出来上がるカウンタ
 build_end_time = 0           # ビルが建ち終わるタイミングを保存
@@ -41,31 +41,7 @@ def setup():
 def draw(): 
     global line_pos, counter, build_counter, build_end, window_time, name_counter, eff_start, name_start, name_end
     
-    if counter==0 and frameCount%1 == 0: # 1フレームレートごとに描画
-        strokeWeight(3) 
-        stroke(40)
-        background(255)
-        for i in range(100):             # 1フレームあたり100個描写
-            n = sin(i+frameCount//5)*30  # nの値を設定
-            ellipse(0+i*10, 300+n, 3, 3) # 設定した(iとn)位置に丸を描写
-        # 最初から目標まで線が引かれてなければ値を増やす
-        if line_pos[0][0]<=line_point[1][0]-10:   # 最初：左上　目標：右上
-            line_pos[0][0] += 10 
-        elif line_pos[1][1]<=line_point[2][1]-10: # 最初：右上　目標：右下
-            line_pos[1][1] += 10 
-        elif line_pos[2][0]>=line_point[3][0]+10: # 最初：右下　目標：左下
-            line_pos[2][0] -= 10 
-        elif line_pos[3][1]>=line_point[0][1]+10: # 最初：左下　目標：左上
-            line_pos[3][1] -= 10 
-        else: 
-            counter = 1 # 次の映像レイヤーに移動
-        # 線を伸ばして四角を作る
-        line(line_point[0][0], line_point[0][1], line_pos[0][0], line_pos[0][1]) # 上の線を描写
-        line(line_point[1][0], line_point[1][1], line_pos[1][0], line_pos[1][1]) # 右の線を描写
-        line(line_point[2][0], line_point[2][1], line_pos[2][0], line_pos[2][1]) # 下の線を描写
-        line(line_point[3][0], line_point[3][1], line_pos[3][0], line_pos[3][1]) # 左の線を描写
-     
-    elif counter==1: # ビルと窓の描写の映像レイヤー
+    if counter==1: # ビルと窓の描写の映像レイヤー
         background("#333333") # 夜空の色を設定
         if build_counter==0: 
             build_end = frameCount+120                                                     # 窓の表示に切り変わる時間の設定
@@ -113,13 +89,13 @@ def draw():
                 draw_name(1) # 時間ごとに下線が変化する名前を描写
             elif frameCount>=eff_start:
                 draw_eff()   # エフェクトを描写
-            else:
-                draw_name(2) # 名前を常に描写
+            # else:
+            #     draw_name(2) # 名前を常に描写
             
  
 # ビルの描写をする関数
-def draw_build(mode): 
-    rate =(float(frameCount)-250)/120
+def draw_build(mode):
+    rate =(float(frameCount)-1)/120
     noStroke()
     fill("#eeeeee")
     if mode==1: 
@@ -220,14 +196,15 @@ def draw_window(mode):
 
 # 名前を表示する前のエフェクト        
 def draw_eff():
+    frame=276
     rate=0 # rateを初期化
     # rate変数を正の数かつ１以下になるように調整
-    if (float(frameCount)-525)/60<=0:   # rate変数が負の時に０
+    if (float(frameCount)-frame)/60<=0:   # rate変数が負の時に０
         rate=0
-    elif (float(frameCount)-525)/60>=1: # rate変数が1以上の時に１
+    elif (float(frameCount)-frame)/60>=1: # rate変数が1以上の時に１
         rate=1
     else:                               # 60フレーム分の今のフレームの割合をrate変数に代入
-        rate=(float(frameCount)-525)/60 
+        rate=(float(frameCount)-frame)/60 
     # Yの位置に左から右へ四角形が伸びるアニメーション
     noStroke()
     fill(255)
@@ -254,23 +231,23 @@ def draw_eff():
     rect(eff_box_pos[1][0], eff_box_pos[1][1], eff_box_pos[1][2], eff_box_pos[1][3]*rate)
     # Iの位置に●を最大５０個描写
     a=0 # aを初期化
-    if frameCount-525<=6: # 6フレーム事にaの値を増やして描写する丸５個ずつ増やす
+    if frameCount-frame<=6: # 6フレーム事にaの値を増やして描写する丸５個ずつ増やす
         a=1  # aを1に設定
-    elif frameCount-525<=12: # 12フレーム
+    elif frameCount-frame<=12: # 12フレーム
         a=2  # aを2に設定
-    elif frameCount-525<=18: # 18フレーム
+    elif frameCount-frame<=18: # 18フレーム
         a=3  # aを3に設定
-    elif frameCount-525<=24: # 24フレーム
+    elif frameCount-frame<=24: # 24フレーム
         a=4  # aを4に設定
-    elif frameCount-525<=30: # 30フレーム
+    elif frameCount-frame<=30: # 30フレーム
         a=5  # aを5に設定
-    elif frameCount-525<=36: # 36フレーム
+    elif frameCount-frame<=36: # 36フレーム
         a=6  # aを6に設定
-    elif frameCount-525<=42: # 42フレーム
+    elif frameCount-frame<=42: # 42フレーム
         a=7  # aを7に設定
-    elif frameCount-525<=48: # 48フレーム
+    elif frameCount-frame<=48: # 48フレーム
         a=8  # aを8に設定
-    elif frameCount-525<=54: # 54フレーム
+    elif frameCount-frame<=54: # 54フレーム
         a=9  # aを9に設定
     else:                    # 60フレーム
         a=10 # aを10に設定
@@ -280,13 +257,14 @@ def draw_eff():
 
 # 名前を表示するアニメーション
 def draw_name(mode):
+    frame=351
     rate=0
-    if float(frameCount-590)/80<0:
+    if float(frameCount-frame)/80<0:
         rate=0
-    elif float(frameCount-590)/80>=1:
+    elif float(frameCount-frame)/80>=1:
         rate=1
     else:
-        rate=float(frameCount-590)/80
+        rate=float(frameCount-frame)/80
     if mode ==1:
         strokeWeight(3)
         stroke("#ffffff")
