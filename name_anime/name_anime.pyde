@@ -28,7 +28,7 @@ name_point = [[[80,200],[110,300],[135,300],[200,200],[80, 400]], [[260, 200],[2
 moon = [[0, 0, 50], [0, 0, 40]]  # 三日月の座標：[[光の部分の情報], [影の部分の情報]]
 
 # 星の座標と
-stars = [[0]*50, [0]*50, [90]*50, [0]*50]
+stars = [[0]*50, [0]*50, [0]*50, [0]*50]
 dstars = [[0]*50, [0]*50]
 
  
@@ -44,15 +44,16 @@ def setup():
 def draw(): 
     global line_pos, counter, build_counter, build_end, window_time, name_counter, eff_start, name_start, name_end
     
-    if counter==1: # ビルと窓の描写の映像レイヤー
+    # ビルと窓の描写の映像レイヤー
+    if counter==1: 
         background("#333333") # 夜空の色を設定
         if build_counter==0: 
             build_end = frameCount+120                                                     # 窓の表示に切り変わる時間の設定
             window_time = [frameCount+130, frameCount+160, frameCount+190, frameCount+270] # ビルを表示し始める時間の設定
             build_counter=1 
         elif build_counter==1: # ビル本体の描写
-            if frameCount==build_end:
-                draw_build(2) 
+            if frameCount==build_end: 
+                draw_build(2) # ビルの終わりを常に表示
                 build_counter=2 
             else:
                 draw_build(1) 
@@ -69,7 +70,7 @@ def draw():
                 draw_window(1) # １番目のビルに窓を描写
         draw_moon()
 
-    # 名前を表示するアニメーション
+    # 名前を表示する映像レイヤー
     elif counter==2:
         background("#333333")  # 夜空の色を設定
         draw_build(2)  # ビルを常に表示
@@ -86,6 +87,7 @@ def draw():
         # 実際に名前やエフェクトを描写
         elif name_counter==1:
             if frameCount>=name_end:
+                draw_name() # 名前を表示して次のレイヤーへ
                 counter=3
             elif frameCount>=name_start:
                 draw_name() # 時間ごとに下線が変化する名前を描写
@@ -97,10 +99,10 @@ def draw():
         draw_build(2)  # ビルを常に表示
         draw_window(3) # 窓を常に表示
         draw_moon()    # 月を常に表示
-        fill(0, 128)
+        fill(0, 128)              # 背景の色白の透明に設定
         rect(0, 0, width, height) # 文字を表示するための背景を表示
-        draw_name()
-        draw_stars()
+        draw_name()  # 名前を表示
+        draw_stars() # 星を表示
         
  
 # ビルの描写をする関数
@@ -128,7 +130,7 @@ def draw_build_sub():
 
 # 1/10の確率で窓を点灯させる
 def change_window_color():
-    color_value = int(random(1, 5))
+    color_value = int(random(1, 7))
     if color_value==1 or color_value==2:
         return "#ffff00" # 窓の色を黄色に設定
     else:
@@ -137,14 +139,14 @@ def change_window_color():
 # 月の座標を時間で設定
 def set_moon():
     global moon
-    h = float(hour())
-    m = float(minute())
-    x = 50+700*(h/24)
-    y = 40+30*(m/60)
-    moon[0][0] = x
-    moon[1][0] = x-5
-    moon[0][1] = y
-    moon[1][1] = y-5
+    h = float(hour())   # 今の時間をhに代入
+    m = float(minute()) # 今の分をmに代入
+    x = 50+700*(h/24)   # 月のx座標を計算
+    y = 40+30*(m/60)    # 月のy座標を計算
+    moon[0][0] = x   # 月の光のx座標
+    moon[1][0] = x-5 # 月の影のx座標
+    moon[0][1] = y   # 月の光のy座標
+    moon[1][1] = y-5 # 月の影のy座標
     
 # moon変数で設定された座標に月を描写
 def draw_moon():
@@ -221,13 +223,13 @@ def draw_eff():
     # Uの位置に線で四角形を順に描写
     if frameCount%1==0:                               # １フレーム毎に数値を増やす
         if eff_line_pos[0][1]<eff_line_point[1][1]:   # 最初：左上　目標：左下
-            eff_line_pos[0][1] += 20
+            eff_line_pos[0][1] += 10
         elif eff_line_pos[1][0]<eff_line_point[2][0]: # 最初：左下　目標：右下
-            eff_line_pos[1][0] += 15
+            eff_line_pos[1][0] += 10
         elif eff_line_pos[2][1]>eff_line_point[3][1]: # 最初：右下　目標：右上
-            eff_line_pos[2][1] -= 20 
+            eff_line_pos[2][1] -= 10
         elif eff_line_pos[3][0]>eff_line_point[0][0]: # 最初：右上　目標：左上
-            eff_line_pos[3][0] -= 15
+            eff_line_pos[3][0] -= 10
         strokeWeight(3)
         stroke(255)
         line(eff_line_point[0][0], eff_line_point[0][1], eff_line_pos[0][0], eff_line_pos[0][1]) # 左の線を描写
@@ -292,10 +294,10 @@ def draw_name():
 def set_stars():
     global stars, dstars
     for i in range(50):
-        xran = int(random(1, 800))
-        yran = int(random(1, 30))
-        stars[0][i] = xran
-        stars[1][i] = -1*yran
+        xran = int(random(1, 600))
+        yran = int(random(1, 100))
+        stars[0][i] = 100+xran
+        stars[1][i] = yran
         dstars[0][i] = 1 # 星のx座標の移動幅
         dstars[1][i] = 1 # 星のy座標の移動幅
 
@@ -305,45 +307,49 @@ def stop_star(i):
     dstars[0][i]=0
     dstars[1][i]=0
 
+# 星の描画
 def draw_stars():
     global stars, dstars
     noStroke()
     fill("#ffff7f") 
-    for i in range(50):
-        if frameCount%60==0:
-            if stars[2][i]<90:
+    for i in range(30):
+        if frameCount%2==0:
+            if stars[2][i]<0:
                 stars[2][i] += 1
-            elif stars[2][i]>90:
+            elif stars[2][i]>0:
                 stars[2][i] -= 1
-        touch_name(i)
+        if frameCount%1==0:
+            check_wall(800, 600, i)
+            check_touch_name(i)
+        check_hit(i)
         change_stars(i)
-        stars[0][i] += dstars[0][i]*cos(radians(stars[2][i]))
-        stars[1][i] += dstars[1][i]*sin(radians(stars[2][i]))
+        stars[0][i] += dstars[0][i]*cos(radians(90+stars[2][i]))
+        stars[1][i] += dstars[1][i]*sin(radians(90+stars[2][i]))
         ellipse(stars[0][i], stars[1][i], 20, 20)
 
 # 名前の線の先に当たったことをカウンタに記録する
-def touch_name(i):
+def check_touch_name(i):
     global stars
-    if (stars[0][i]>=name_point[0][0][0]-10 and stars[0][i]<=name_point[0][0][0]+10) and (stars[1][i]>=name_point[0][0][1]-10 and stars[1][i]<=name_point[0][0][1]+10):
+    if (stars[0][i]>=name_point[0][0][0]-5 and stars[0][i]<=name_point[0][0][0]+5) and (stars[1][i]>=name_point[0][0][1]-5 and stars[1][i]<=name_point[0][0][1]+5):
         stars[3][i]=1
         print("Y1")
-    elif (stars[0][i]>=name_point[0][3][0]-10 and stars[0][i]<=name_point[0][3][0]+10) and (stars[1][i]>=name_point[0][3][1]-10 and stars[1][i]<=name_point[0][3][1]+10):
+    elif (stars[0][i]>=name_point[0][3][0]-5 and stars[0][i]<=name_point[0][3][0]+5) and (stars[1][i]>=name_point[0][3][1]-5 and stars[1][i]<=name_point[0][3][1]+5):
         stars[3][i]=2
         print("Y2")
-    elif (stars[0][i]>=name_point[1][0][0]-10 and stars[0][i]<=name_point[1][0][0]+10) and (stars[1][i]>=name_point[1][0][1]-10 and stars[1][i]<=name_point[1][0][1]+10):
+    elif (stars[0][i]>=name_point[1][0][0]-5 and stars[0][i]<=name_point[1][0][0]+5) and (stars[1][i]>=name_point[1][0][1]-5 and stars[1][i]<=name_point[1][0][1]+5):
         stars[3][i]=3
         print("U1")
-    elif (stars[0][i]>=name_point[1][4][0]-10 and stars[0][i]<=name_point[1][4][0]+10) and (stars[1][i]>=name_point[1][4][1]-10 and stars[1][i]<=name_point[1][4][1]+10):
+    elif (stars[0][i]>=name_point[1][4][0]-5 and stars[0][i]<=name_point[1][4][0]+5) and (stars[1][i]>=name_point[1][4][1]-5 and stars[1][i]<=name_point[1][4][1]+5):
         stars[3][i]=4
         print("U2")
-    elif (stars[0][i]>=name_point[2][0][0]-10 and stars[0][i]<=name_point[2][0][0]+10) and (stars[1][i]>=name_point[2][0][1]-10 and stars[1][i]<=name_point[2][0][1]+10):
+    elif (stars[0][i]>=name_point[2][0][0]-5 and stars[0][i]<=name_point[2][0][0]+5) and (stars[1][i]>=name_point[2][0][1]-5 and stars[1][i]<=name_point[2][0][1]+5):
         stars[3][i]=5
         print("K1")
-    elif (stars[0][i]>=name_point[2][2][0]-10 and stars[0][i]<=name_point[2][2][0]+10) and (stars[1][i]>=name_point[2][2][1]-10 and stars[1][i]<=name_point[2][2][1]+10):
+    elif (stars[0][i]>=name_point[2][2][0]-5 and stars[0][i]<=name_point[2][2][0]+5) and (stars[1][i]>=name_point[2][2][1]-5 and stars[1][i]<=name_point[2][2][1]+5):
         stars[3][i]=6
         print("K2")
 
-# 
+# check_name関数で感知された場合移動する角度を変更する関数
 def change_stars(i):
     global stars
     fill("#ffff7f")
@@ -351,36 +357,66 @@ def change_stars(i):
         if stars[1][i]>=name_point[0][1][1]:
             stop_star(i)
         else:
-            stars[2][i] = 75
+            stars[2][i] = -25
     elif stars[3][i]==2 and stars[1][i]>=name_point[0][3][1]:
         if stars[1][i]>=name_point[0][2][1]:
             stop_star(i)
         else:
-            stars[2][i] = 120
+            stars[2][i] = 30
     elif stars[3][i]==3 and stars[1][i]>=name_point[1][0][1]:
         if stars[1][i]>=name_point[1][1][1]:
             stop_star(i)
         else:
-            stars[2][i] = 90
+            stars[2][i] = 0
     elif stars[3][i]==4 and stars[1][i]>=name_point[1][4][1]:
         if stars[1][i]>=name_point[1][3][1]:
             stop_star(i)
         else:
-            stars[2][i] = 90
+            stars[2][i] = 0
     elif stars[3][i]==5 and stars[1][i]>=name_point[2][0][1]:
         if stars[1][i]>=name_point[2][4][1]:
             stop_star(i)
         else:
-            stars[2][i] = 90
+            stars[2][i] = 0
     elif stars[3][i]==6 and stars[1][i]>=name_point[2][2][1]:
         if stars[1][i]>=name_point[2][3][1]:
             stop_star(i)
         else:
-            stars[2][i] = 130       
+            stars[2][i] = 40    
 
-def check_hit():
-    for i in range(50, 1, -1):
-        
+# 星同士がぶつかったときに角度を変更する関数
+def check_hit(n):
+    global stars
+    for i in range(n-1, -1, -1):
+        r = dist(stars[0][n], stars[1][n], stars[0][i], stars[1][i])
+        if r<19:
+            stars[2][i] = int(-0.7*stars[2][i])
+            if stars[2][n]==0:
+                if stars[1][n]>stars[1][i]:
+                    stars[2][n]=0
+                elif stars[1][n]<stars[1][i]:
+                    stars[2][n]=180
+                        
 # def check_senter():
     
-# def check_wall():
+def check_wall(w, h, i):
+    if stars[0][i]<=0 or stars[0][i]>=w:
+        stars[2][i] = int(-0.6*stars[2][i])
+    elif stars[1][i]>=h and (stars[0][i]<=w/2-20 or stars[0][i]>=w/2+20):
+        stars[1][i]=h
+        if stars[0][i]<=w/2-10:
+            stars[0][i] +=1
+        elif stars[0][i]>=w/2+10:
+            stars[0][i] -=1
+            
+    if stars[0][i]>=w/2-20 and stars[0][i]<=w/2+20:
+        stars[1][i]-=3
+        ran = int(random(1,4))
+        aran = int(random(-50, 50)) # 1~3で乱数
+        if frameCount%(30*ran)==0:
+            if aran==0:
+                print(aran)
+            else:
+                stars[2][i]=180+aran
+            
+            
