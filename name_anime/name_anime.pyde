@@ -28,7 +28,7 @@ name_point = [[[100,200],[120,300],[145,300],[210,200],[100, 400]], [[250, 200],
 moon = [[0, 0, 50], [0, 0, 40]]  # 三日月の座標：[[光の部分の情報], [影の部分の情報]]
 
 # 星の座標と移動幅
-star_n = 100
+star_n = 80
 stars = [[0]*star_n, [0]*star_n, [0]*star_n, [100]*star_n, [0]*star_n] # 星のxy座標と角度とどこの部分に接触したかを保存する変数
 dstars = [1]*star_n      # 星の移動する数を保存
 name_hit_count = [-1]*6  # 星が名前の先端についた数を保存
@@ -278,7 +278,7 @@ def draw_stars():
     noStroke()
     fill("#ffff7f") 
     for i in range(star_n): # 星の数だけ繰り返す 
-        if frameCount%1==0: # フレームカウントが整数の時に実行
+        if frameCount%2==0: # フレームカウントが偶数の時に実行
             if stars[2][i]<0:
                 stars[2][i] += 1
             elif stars[2][i]>0:
@@ -288,10 +288,21 @@ def draw_stars():
         check_hit(i)            # 星同士が衝突したときに処理する関数を実行
         count_name_hit(i)       # 名前の欄に星が蓄えられる数が限界かどうかを感知する関数を実行
         change_stars(i)         # 星の状態によって移動する角度を変更する関数を実行
-        stars[0][i] += dstars[i]*cos(radians(90+stars[2][i])) # 星のx座標を変更
-        stars[1][i] += dstars[i]*sin(radians(90+stars[2][i])) # 星のy座標を変更
-        ellipse(stars[0][i], stars[1][i], 20, 20) # 星を位置によって描画
-        
+        stars[0][i] += dstars[i]*cos(radians(stars[2][i]+90)) # 星のx座標の中心を変更
+        stars[1][i] += dstars[i]*sin(radians(stars[2][i]+90)) # 星のy座標の中心を変更
+        x = [0]*5 # 星の頂点のx座標を初期化
+        y = [0]*5 # 星の頂点のy座標を初期化
+        for n in range(5):
+            x[n]=stars[0][i]+13*cos(radians(72*n+(90+stars[2][i]))) # 星の頂点のx座標を設定
+            y[n]=stars[1][i]-13*sin(radians(72*n+(90+stars[2][i]))) # 星の頂点のy座標を設定
+        # 星を描く
+        beginShape()
+        vertex(x[0], y[0]) 
+        vertex(x[2], y[2])
+        vertex(x[4], y[4])
+        vertex(x[1], y[1])
+        vertex(x[3], y[3])
+        endShape()
 
 # 名前の線の先に当たったことをカウンタに記録する関数
 def check_touch_name(i):
@@ -351,7 +362,7 @@ def check_hit(n):
     for i in range(n-1, -1, -1):
         r = dist(stars[0][n], stars[1][n], stars[0][i], stars[1][i]) # 星と別の星の距離をrに設定
         if r<19: # 星同士が衝突したとき
-            stars[2][i] = int(-0.8*stars[2][i]) # 星を0.8の反発係数で跳ね返す
+            stars[2][i] = -0.8*stars[2][i] # 星を0.8の反発係数で跳ね返す
             if stars[2][n]==0:
                 if stars[1][n]>stars[1][i]: # 星が下なら下へ向かうようにする 
                     stars[2][n]=0
@@ -362,14 +373,14 @@ def check_hit(n):
 def check_wall(w, h, i):
     harf_ran = int(random(0,2)) # 1/2の乱数を代入
     if stars[0][i]<=10 or stars[0][i]>=w-10: # 壁とぶつかったことを感知
-        stars[2][i] = int(-0.7*stars[2][i]) # 0.7の反発係数で星を反射
-    elif stars[1][i]>h-10 and (stars[0][i]<=w/2-20 or stars[0][i]>=w/2+20): # 中央以外の地面に追加たことを感知
+        stars[2][i] = -0.7*stars[2][i] # 0.7の反発係数で星を反射
+    if stars[1][i]>h-10 and (stars[0][i]<=w/2-20 or stars[0][i]>=w/2+20): # 中央以外の地面に追加たことを感知
         stars[1][i]=h-10 # 星のy座標を地面の位置に設定
         if stars[0][i]<=w/2-10: # 星が中央より左側なら右へ移動
             stars[0][i] +=1
         elif stars[0][i]>=w/2+10: # 星が中央より右側なら左へ移動
             stars[0][i] -=1
-    elif stars[1][i]<=0: # 天井についたときに下へ落ちていくようにする
+    if stars[1][i]<=0: # 天井についたときに下へ落ちていくようにする
         stars[1][i]=0 # 星の座標を0にする
         if stars[0][i]>w/2: # 中央より左なら角度を-80に設定
             stars[2][i]=-80
@@ -393,7 +404,7 @@ def count_name_hit(i):
         if stars[4][i]==0 and stars[3][i]==j:
             name_hit_count[j]+=1 # 名前に当たったときに１増やす
             stars[4][i]=1        # 名前に当たったことを記録
-
+            print(name_hit_counter)
         # 蓄えられる数を各段階によって超えたかを感知超えたなら変数に設定する
         if name_hit_count[0]>6:
             name_hit_counter[j]=1
@@ -407,4 +418,8 @@ def count_name_hit(i):
             name_hit_counter[j]=1
         if name_hit_count[5]>4:
             name_hit_counter[j]=1
-        
+
+# 画面の写真を撮る
+def keyPressed():
+    if key=="p":
+        save("report.png")
