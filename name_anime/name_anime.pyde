@@ -25,11 +25,11 @@ eff_box_pos = [[80,200,150,200], [410,200,150, 200]]       # 1と3番目のエ�
 eff_pos = [570,200]                                        # 4番目のエフェクトの座標
 name_point = [[[100,200],[120,300],[145,300],[210,200],[100, 400]], [[250, 200],[250, 360],[280,400],[360,400],[360,200]],
               [[430,200],[430,400],[520,220],[465,290],[430,290],[520, 400]], [[575,220],[645,200],[720,220],[645,400],[580,400],[710, 400]]] # 名前の目標座標：[[Y], [U], [K], [I]]
-moon = [[0, 0, 50], [0, 0, 40]]  # 三日月の座標：[[光の部分の情報], [影の部分の情報]]
+moon = [[0, 0, 50], [0, 0, 40]]  # 三日月の座標
 
 # 星の座標と移動幅
 star_n = 80
-stars = [[0]*star_n, [0]*star_n, [0]*star_n, [100]*star_n, [0]*star_n] # 星のxy座標と角度とどこの部分に接触したかを保存する変数
+stars = [[0]*star_n, [0]*star_n, [0]*star_n, [100]*star_n, [0]*star_n] # 星のxy座標と角度とどこの部分に接触したかを保存
 dstars = [1]*star_n      # 星の移動する数を保存
 name_hit_count = [-1]*6  # 星が名前の先端についた数を保存
 name_hit_counter = [0]*6 # 星をためる数が満タンかそうでないかを保存
@@ -41,7 +41,7 @@ def setup():
     line_point = [[40, 40], [width-40, 40], [width-40, height-40], [40, height-40]] # 目標とする線の座標を設定
     line_pos = [[40, 40], [width-40, 40], [width-40, height-40], [40, height-40]]   # 現在の線の座標を設定
     set_window() # 窓の座標と色を設定 
-    set_stars()
+    set_stars()  # 星の座標と状態を設定
      
 def draw(): 
     global line_pos, counter, build_counter, build_end, window_time, name_counter, eff_start, name_start, name_end
@@ -84,7 +84,7 @@ def draw():
         if name_counter==0: 
             eff_start = frameCount+5   # エフェクトがかかるフレームを設定
             name_start = frameCount+80 # 名前を表示するフレームを設定
-            name_end = frameCount+200  # 全てが終わるフレームを設定
+            name_end = frameCount+120  # 全てが終わるフレームを設定
             name_counter=1             # 次の実際に描写する段階に移動
         # 実際に名前やエフェクトを描写
         elif name_counter==1:
@@ -269,8 +269,9 @@ def draw_name():
 def set_stars():
     global stars, dstars
     for i in range(star_n): # 星の数だけ繰り返す
-        stars[0][i] = int(random(15, 780))     # 星の横の座標を設定
-        stars[1][i] = 20*int(random(1, 20))    # 星の縦の座標を設定
+        stars[0][i] = random(15, 780)     # 星の横の座標を設定
+        stars[1][i] = random(11, 100)    # 星の縦の座標を設定
+ 
 
 # 星の描画
 def draw_stars():
@@ -285,7 +286,6 @@ def draw_stars():
                 stars[2][i] -= 1
         check_wall(800, 600, i) # 壁に衝突したときの処理を実行する関数を実行
         check_touch_name(i)     # 名前の端に衝突したときに処理を実行する関数を実行
-        check_hit(i)            # 星同士が衝突したときに処理する関数を実行
         count_name_hit(i)       # 名前の欄に星が蓄えられる数が限界かどうかを感知する関数を実行
         change_stars(i)         # 星の状態によって移動する角度を変更する関数を実行
         stars[0][i] += dstars[i]*cos(radians(stars[2][i]+90)) # 星のx座標の中心を変更
@@ -309,7 +309,7 @@ def check_touch_name(i):
     global stars
     if (stars[0][i]>=name_point[0][0][0]-10 and stars[0][i]<=name_point[0][0][0]+10) and (stars[1][i]>=name_point[0][0][1]-5 and stars[1][i]<=name_point[0][0][1]+5) and name_hit_counter[0]==0: # Y1
         stars[3][i]=0
-    elif (stars[0][i]>=name_point[0][3][0]-10 and stars[0][i]<=name_point[0][3][0]+10) and (stars[1][i]>=name_point[0][3][1]-5 and stars[1][i]<=name_point[0][3][1]+5) and name_hit_counter[1]==0: # Y2
+    elif (stars[0][i]>=name_point[0][3][0]-10 and stars[0][i]<=name_point[0][3][0]+10) and (stars[1][i]>=name_point[0][3][1]-7 and stars[1][i]<=name_point[0][3][1]+5) and name_hit_counter[1]==0: # Y2
         stars[3][i]=1
     elif (stars[0][i]>=name_point[1][0][0]-10 and stars[0][i]<=name_point[1][0][0]+10) and (stars[1][i]>=name_point[1][0][1]-5 and stars[1][i]<=name_point[1][0][1]+5) and name_hit_counter[2]==0: # U1
         stars[3][i]=2
@@ -330,47 +330,48 @@ def change_stars(i):
             dstars[i]=0 # 星を停止させる
         else:
             stars[2][i]=-15 # 星の角度を設定
-    elif stars[3][i]==1: # 星を停止させる
+    if stars[3][i]==1: 
         if stars[1][i]>=name_point[0][2][1]-(name_hit_count[1]*20):
-            dstars[i]=0 
+            dstars[i]=0 # 星を停止させる
         else:
             stars[2][i] = 30
-    elif stars[3][i]==2:
+    if stars[3][i]==2:
         if stars[1][i]>=name_point[1][1][1]-(name_hit_count[2]*20):
             dstars[i]=0 # 星を停止させる
         else:
             stars[2][i] = 0
-    elif stars[3][i]==3:
+    if stars[3][i]==3:
         if stars[1][i]>=name_point[1][3][1]-(name_hit_count[3]*20):
             dstars[i]=0 # 星を停止させる
         else:
             stars[2][i] = 0
-    elif stars[3][i]==4:
+    if stars[3][i]==4:
         if stars[1][i]>=name_point[2][4][1]-(name_hit_count[4]*20):
             dstars[i]=0 # 星を停止させる
         else:
             stars[2][i] = 0
-    elif stars[3][i]==5:
+    if stars[3][i]==5:
         if stars[1][i]>=name_point[2][3][1]-(name_hit_count[5]*20):
             dstars[i]=0 # 星を停止させる
         else:
             stars[2][i] = 40    
 
 # 星同士がぶつかったときに角度を変更する関数
-def check_hit(n):
+def check_hit(i):
     global stars
-    for i in range(n-1, -1, -1):
-        r = dist(stars[0][n], stars[1][n], stars[0][i], stars[1][i]) # 星と別の星の距離をrに設定
-        if r<19: # 星同士が衝突したとき
-            stars[2][i] = -0.8*stars[2][i] # 星を0.8の反発係数で跳ね返す
-            if stars[2][n]==0:
-                if stars[1][n]>stars[1][i]: # 星が下なら下へ向かうようにする 
-                    stars[2][n]=0
-                elif stars[1][n]<stars[1][i]: # 星が上なら上へ向かうようにする 
-                    stars[2][n]=180
+    for n in range(i-1, -1, -1):
+        r = dist(stars[0][i], stars[1][i], stars[0][n], stars[1][n]) # 星と別の星の距離をrに設定
+        if r<=20: # 星同士が衝突したとき星を跳ね返す
+            if stars[2][i]>0:
+                stars[2][i] = -1*(180-stars[2][i]) 
+            elif stars[2][i]<0:
+                stars[2][i] = 180+stars[2][i] 
+            elif stars[2][i]=0:
+                stars[2][i]=180
 
-# 星が壁や天井、床についたときに合わせて挙動を変化させる                   
+# 何かものが衝突したときに挙動を変化させる                   
 def check_wall(w, h, i):
+    check_hit(i)
     harf_ran = int(random(0,2)) # 1/2の乱数を代入
     if stars[0][i]<=10 or stars[0][i]>=w-10: # 壁とぶつかったことを感知
         stars[2][i] = -0.7*stars[2][i] # 0.7の反発係数で星を反射
@@ -380,15 +381,15 @@ def check_wall(w, h, i):
             stars[0][i] +=1
         elif stars[0][i]>=w/2+10: # 星が中央より右側なら左へ移動
             stars[0][i] -=1
-    if stars[1][i]<=0: # 天井についたときに下へ落ちていくようにする
-        stars[1][i]=0 # 星の座標を0にする
+    if stars[1][i]<10: # 天井についたときに下へ落ちていくようにする
+        stars[1][i]=10 # 星の座標を天井にする
         if stars[0][i]>w/2: # 中央より左なら角度を-80に設定
-            stars[2][i]=-80
+            stars[2][i]=-75
         else:               # 中央より右なら角度を80に設定
-            stars[2][i]=80
+            stars[2][i]=75
     # 中央についたときに上昇する
     if stars[0][i]>=w/2-20 and stars[0][i]<=w/2+20: 
-        stars[1][i]-=3             # 星が上昇する
+        stars[1][i]-=2.5           # 星が上昇する
         tran = int(random(5,8))    # 時間の乱数1～3で設定
         aran = int(random(30, 60)) # 角度を変数３０～６０で設定
         if frameCount%(10*tran)==0: # 時間の乱数のタイミングによって時間を設定
@@ -404,22 +405,30 @@ def count_name_hit(i):
         if stars[4][i]==0 and stars[3][i]==j:
             name_hit_count[j]+=1 # 名前に当たったときに１増やす
             stars[4][i]=1        # 名前に当たったことを記録
-            print(name_hit_counter)
-        # 蓄えられる数を各段階によって超えたかを感知超えたなら変数に設定する
-        if name_hit_count[0]>6:
-            name_hit_counter[j]=1
-        if name_hit_count[1]>8:
-            name_hit_counter[j]=1
+        # 蓄えられる数を各段階によって超えたかを感知し超えたなら変数に設定する
+        if name_hit_count[0]>4:
+            name_hit_counter[0]=1
+        if name_hit_count[1]>4:
+            name_hit_counter[1]=1
         if name_hit_count[2]>10:
-            name_hit_counter[j]=1
-        if name_hit_count[3]>10:
-            name_hit_counter[j]=1
-        if name_hit_count[4]>4:
-            name_hit_counter[j]=1
+            name_hit_counter[2]=1
+        if name_hit_count[3]>13:
+            name_hit_counter[3]=1
+        if name_hit_count[4]>3:
+            name_hit_counter[4]=1
         if name_hit_count[5]>4:
-            name_hit_counter[j]=1
+            name_hit_counter[5]=1
 
 # 画面の写真を撮る
 def keyPressed():
+    global stars
     if key=="p":
         save("report.png")
+    if key=="a" and counter==3: # aボタンを押したときに地面から星を打ち上げる
+        for i in range(star_n):
+            ran = int(random(0,2))
+            # 地面から150ピクセルのときに1/2の確立で-180か180の星の角度を変更する
+            if ran==0 and stars[1][i]>450: 
+                stars[2][i]=180  # 星の角度を180に設定する
+            elif ran==1 and stars[1][i]>450:
+                stars[2][i]=-180 # 星の角度を-180に設定する
