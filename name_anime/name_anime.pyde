@@ -311,7 +311,7 @@ def check_touch_name(i):
         stars[3][i]=2
     elif (stars[0][i]>=name_point[1][4][0]-7 and stars[0][i]<=name_point[1][4][0]+7) and (stars[1][i]>=name_point[1][4][1]-5 and stars[1][i]<=name_point[1][4][1]+5) and limit_counter[3]==0: # U2
         stars[3][i]=3
-    elif (stars[0][i]>=name_point[2][0][0]-10 and stars[0][i]<=name_point[2][0][0]+10) and (stars[1][i]>=name_point[2][0][1]-5 and stars[1][i]<=name_point[2][0][1]+5) and limit_counter[4]==0: # K1
+    elif (stars[0][i]>=name_point[2][0][0]-7 and stars[0][i]<=name_point[2][0][0]+7) and (stars[1][i]>=name_point[2][0][1]-5 and stars[1][i]<=name_point[2][0][1]+5) and limit_counter[4]==0: # K1
         stars[3][i]=4
     elif (stars[0][i]>=name_point[2][2][0]-10 and stars[0][i]<=name_point[2][2][0]+10) and (stars[1][i]>=name_point[2][2][1]-5 and stars[1][i]<=name_point[2][2][1]+5) and limit_counter[5]==0: # K2
         stars[3][i]=5
@@ -324,37 +324,37 @@ def change_stars(i):
     fill("#ffff7f")
     # 星の状態によって角度と停止をif文で仕分けるようにする
     if stars[3][i]==0:
-        if stars[1][i]>=name_point[0][1][1]-(name_hit_count[0]*20):
+        if stars[1][i]>=name_point[0][1][1]-(name_hit_count[0]*20): # Y1
             dstars[i]=0 # 星を停止させる
         else:
             stars[2][i]=-15 # 星の角度を設定
     if stars[3][i]==1: 
-        if stars[1][i]>=name_point[0][2][1]-(name_hit_count[1]*20):
+        if stars[1][i]>=name_point[0][4][1]-(name_hit_count[1]*20): # Y2
             dstars[i]=0 # 星を停止させる
         else:
             stars[2][i] = 30
     if stars[3][i]==2:
-        if stars[1][i]>=name_point[1][1][1]-(name_hit_count[2]*20):
+        if stars[1][i]>=name_point[1][1][1]-(name_hit_count[2]*20): # U1
             dstars[i]=0 # 星を停止させる
         else:
             stars[2][i] = 0
     if stars[3][i]==3:
-        if stars[1][i]>=name_point[1][3][1]-(name_hit_count[3]*20):
+        if stars[1][i]>=name_point[1][3][1]-(name_hit_count[3]*20): # U2
             dstars[i]=0 # 星を停止させる
         else:
             stars[2][i] = 0
     if stars[3][i]==4:
-        if stars[1][i]>=name_point[2][4][1]-(name_hit_count[4]*20):
+        if stars[1][i]>=name_point[2][1][1]-(name_hit_count[4]*20): # K1
             dstars[i]=0 # 星を停止させる
         else:
             stars[2][i] = 0
     if stars[3][i]==5:
-        if stars[1][i]>=name_point[2][3][1]-(name_hit_count[5]*20):
+        if stars[1][i]>=name_point[2][3][1]-(name_hit_count[5]*20): # K2
             dstars[i]=0 # 星を停止させる
         else:
             stars[2][i] = 40
     if stars[3][i]==6:
-        if stars[1][i]>=name_point[3][1][1]-(name_hit_count[6]*20):
+        if stars[1][i]>=name_point[3][1][1]-(name_hit_count[6]*20): # I
             dstars[i]=0 # 星を停止させる
         else:
             stars[2][i]=0
@@ -404,7 +404,7 @@ def check_wall(w, h, i):
 # 名前の欄に星が蓄えられる数が限界かどうかを感知する関数
 def count_name_hit(i):
     global name_hit_cunt, name_hit_counter
-    limit_name = [4, 4, 7, 9, 3, 3, 9]
+    limit_name = [4, 9, 7, 9, 9, 3, 9]
     for j in range(7):
         if stars[4][i]==0 and stars[3][i]==j:
             name_hit_count[j]+=1 # 名前に当たったときに１増やす
