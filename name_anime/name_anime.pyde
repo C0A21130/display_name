@@ -1,3 +1,4 @@
+# グローバル変数
 # カウンタやタイミング類の初期化
 counter = 1                  # 映像レイヤーのカウンタ
 build_counter=0              # 今ビルが建っているカウンタ
@@ -28,12 +29,13 @@ name_point = [[[100,200],[120,300],[145,300],[210,200],[100, 400]], [[250, 200],
 moon = [[0, 0, 50], [0, 0, 40]]  # 三日月の座標
 
 # 星の座標と移動幅
-star_n = 80
+star_n = 80 # 星の数を保存
 stars = [[0]*star_n, [0]*star_n, [0]*star_n, [100]*star_n, [0]*star_n] # 星のxy座標と角度とどこの部分に接触したかを保存
 dstars = [1]*star_n      # 星の移動する数を保存
 name_hit_count = [-1]*6  # 星が名前の先端についた数を保存
 name_hit_counter = [0]*6 # 星をためる数が満タンかそうでないかを保存
- 
+
+# setup関数
 def setup(): 
     global line_point ,line_pos, buil_window_colors, window1
     frameRate(60)  # フレームレートを60に設定
@@ -42,10 +44,10 @@ def setup():
     line_pos = [[40, 40], [width-40, 40], [width-40, height-40], [40, height-40]]   # 現在の線の座標を設定
     set_window() # 窓の座標と色を設定 
     set_stars()  # 星の座標と状態を設定
-     
+
+# draw関数
 def draw(): 
     global line_pos, counter, build_counter, build_end, window_time, name_counter, eff_start, name_start, name_end
-    
     # ビルと窓の描写の映像レイヤー
     if counter==1: # ビルと窓の描写の映像レイヤーであることを感知
         background("#333333") # 夜空の色を設定
@@ -71,7 +73,6 @@ def draw():
             elif frameCount>=window_time[0]:
                 draw_window(1) # １番目のビルに窓を描写
         draw_moon() # 月を常に描画する
-    
     # 名前を表示する映像レイヤー
     elif counter==2: # 名前を描写する映像レイヤーであることを感知
         background("#333333")  # 夜空の色を設定
@@ -95,19 +96,17 @@ def draw():
                 draw_name() # 時間ごとに下線が変化する名前を描写
             elif frameCount>=eff_start: # 始まりの時間になったことを感知
                 draw_eff()   # エフェクトを描写
-
     # 星と名前を描写する映像レイヤー
     elif counter==3: # 名前と星が描写する映像レイヤーであることを感知
         background("#333333")     # 夜空の色を設定
         draw_build(2)             # ビルを常に表示
         draw_window(3)            # 窓を常に表示
         draw_moon()               # 月を常に表示
-        fill(51, 51, 51, 128)   # 背景の色白の透明に設定
+        fill(51, 51, 51, 128)     # 背景の色白の透明に設定
         rect(0, 0, width, height) # 文字を表示するための背景を表示
         draw_name()               # 名前を表示
         draw_stars()              # 星を表示
         
- 
 # ビルの描写を引数で渡されたモードで描写する関数
 def draw_build(mode): 
     rate =(float(frameCount)-1)/120 # ビルを表示する割合を設定
@@ -123,7 +122,7 @@ def draw_build(mode):
         rect(buil_pos[2][0], buil_pos[2][1], buil_pos[2][2], buil_pos[2][3]) 
     draw_build_sub() # ３番ビルの左側を削る
 
-# ３番ビルの角を削る関数
+# 一番右のビルの角を削る関数
 def draw_build_sub():
     noStroke()
     fill("#333333")
@@ -154,11 +153,11 @@ def draw_moon():
     fill("#333333")
     ellipse(moon[1][0], moon[1][1], moon[1][2], moon[1][2]) # 月の影の部分を表示
     
-
-# 窓の座標と色をセットする関数
+# 窓の座標と色を設定する関数
 def set_window():
-    global window1
+    global window
     noStroke()
+    # 窓のY座標を設定
     for i in range(20):
         if i<=9:
             window[0][1][i] = window_init_pos[0][1]+50*i # １番ビルの左側のy座標を設定
@@ -171,26 +170,27 @@ def set_window():
         window[0][2][i] = change_window_color() # １番ビルの色を決定
         window[1][2][i] = change_window_color() # ２番ビルの色を決定
         window[2][2][i] = change_window_color() # ３番ビルの色を決定
+    # 窓のX座標を設定
     for n in range(2):
         window[0][0][n] = window_init_pos[0][0]+100*n # １番ビルのx座標を設定
         window[1][0][n] = window_init_pos[1][0]+100*n # ２番ビルのx座標を設定
         window[2][0][n] = window_init_pos[2][0]+110*n # ３番ビルのx座標を設定
         
-# 窓の描写 
+# 窓の描写をする関数
 def draw_window(mode):
-    if mode==1: # １番ビルに窓を表示
+    if mode==1: # 左側のビルに窓を描写
         for i in range(20):
             a = 0 if i<=9 else 1
             fill(window[0][2][i])
             rect(window[0][0][a], window[0][1][i], 30, 30) # １番ビルに窓を表示
-    elif mode==2: # １と３番ビルに窓を表示
+    elif mode==2: # 左側と右側のビルに窓を描写
         for i in range(20):
             a = 0 if i<=9 else 1 
             fill(window[0][2][i])
             rect(window[0][0][a], window[0][1][i], 30, 30) # １番ビルに窓を表示
             fill(window[2][2][i])
             rect(window[2][0][a], window[2][1][i], 40, 40) # ３番ビルに窓を表示  
-    elif mode==3: # １と２と３番ビルに窓を表示
+    elif mode==3: # 全てのビルに窓を描写
         for i in range(20):
             a = 0 if i<=9 else 1
             fill(window[0][2][i])
@@ -199,9 +199,9 @@ def draw_window(mode):
             rect(window[1][0][a], window[1][1][i], 25, 25) # ２番ビルに窓を表示
             fill(window[2][2][i])
             rect(window[2][0][a], window[2][1][i], 40, 40) # ３番ビルに窓を表示
-    draw_build_sub() # ３番ビルの左側を削る
+    draw_build_sub() # 右側のビルの左上側を削る
 
-# 名前を表示する前のエフェクト        
+# 名前を描写する前のエフェクトを描写する関数      
 def draw_eff():
     rate=0 # rateを初期化
     # rate変数を正の数かつ１以下になるように調整
@@ -241,7 +241,7 @@ def draw_eff():
         for n in range(a): # 横にa個並べる
             ellipse(eff_pos[0]+i*30, eff_pos[1]+n*22, 7, 7) # 丸の描写
 
-# 名前を表示するアニメーション
+# 名前のフレームを描写する関数
 def draw_name():
     strokeWeight(10)  # 名前の線を10に設定
     stroke("#ffffff") # 名前の色を#ffffffに設定
@@ -271,7 +271,6 @@ def set_stars():
     for i in range(star_n): # 星の数だけ繰り返す
         stars[0][i] = random(15, 780)     # 星の横の座標を設定
         stars[1][i] = random(11, 100)    # 星の縦の座標を設定
- 
 
 # 星の描画
 def draw_stars():
@@ -295,7 +294,7 @@ def draw_stars():
         for n in range(5):
             x[n]=stars[0][i]+13*cos(radians(72*n+(90+stars[2][i]))) # 星の頂点のx座標を設定
             y[n]=stars[1][i]-13*sin(radians(72*n+(90+stars[2][i]))) # 星の頂点のy座標を設定
-        # 星を描く
+        # 決められた座標に星を描く
         beginShape()
         vertex(x[0], y[0]) 
         vertex(x[2], y[2])
@@ -362,14 +361,14 @@ def check_hit(i):
     for n in range(i-1, -1, -1):
         r = dist(stars[0][i], stars[1][i], stars[0][n], stars[1][n]) # 星と別の星の距離をrに設定
         if r<=18: # 星同士が衝突したとき星を跳ね返す
-            if stars[2][i]>0:
+            if stars[2][i]>0:    # 星の角度が正のときに2.5ずつ増やす
                 stars[2][i]+=2.5
-            elif stars[2][i]<0:
+            elif stars[2][i]<0:  # 星の角度が負のときに2.5ずつ減らす
                 stars[2][i]-=2.5
-            elif stars[2][i]==0:
+            elif stars[2][i]==0: # 星の角度が0のときには上になる
                 stars[2][i]=180
 
-# 何かものが衝突したときに挙動を変化させる                   
+# 何かものが衝突したときに挙動を変化させる関数        
 def check_wall(w, h, i):
     check_hit(i)
     harf_ran = int(random(0,2)) # 1/2の乱数を代入
@@ -410,16 +409,16 @@ def count_name_hit(i):
             name_hit_counter[0]=1
         if name_hit_count[1]>4:
             name_hit_counter[1]=1
-        if name_hit_count[2]>10:
+        if name_hit_count[2]>7:
             name_hit_counter[2]=1
-        if name_hit_count[3]>13:
+        if name_hit_count[3]>9:
             name_hit_counter[3]=1
         if name_hit_count[4]>3:
             name_hit_counter[4]=1
-        if name_hit_count[5]>4:
+        if name_hit_count[5]>3:
             name_hit_counter[5]=1
 
-# 画面の写真を撮る
+# ボタンを押したときの処理をする関数
 def keyPressed():
     global stars
     if key=="p":
