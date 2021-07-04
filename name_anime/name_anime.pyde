@@ -25,15 +25,15 @@ eff_line_pos = [[240,200],[240,400],[390,400],[390,200]]   # 2番目のエフェ
 eff_box_pos = [[80,200,150,200], [410,200,150, 200]]       # 1と3番目のエフェクトの座標
 eff_pos = [570,200]                                        # 4番目のエフェクトの座標
 name_point = [[[100,200],[120,300],[145,300],[210,200],[100, 400]], [[250, 200],[250, 360],[280,400],[360,400],[360,200]],
-              [[430,200],[430,400],[520,220],[465,290],[430,290],[520, 400]], [[575,220],[645,200],[720,220],[645,400],[580,400],[710, 400]]] # 名前の目標座標：[[Y], [U], [K], [I]]
+              [[430,200],[430,400],[520,220],[465,290],[430,290],[520, 400]], [[645,200],[645,400]]] # 名前の目標座標：[[Y], [U], [K], [I]]
 moon = [[0, 0, 50], [0, 0, 40]]  # 三日月の座標
 
 # 星の座標と移動幅
 star_n = 80 # 星の数を保存
 stars = [[0]*star_n, [0]*star_n, [0]*star_n, [100]*star_n, [0]*star_n] # 星のxy座標と角度とどこの部分に接触したかを保存
 dstars = [1]*star_n      # 星の移動する数を保存
-name_hit_count = [-1]*6  # 星が名前の先端についた数を保存
-name_hit_counter = [0]*6 # 星をためる数が満タンかそうでないかを保存
+name_hit_count = [-1]*7  # 星が名前の先端についた数を保存
+limit_counter = [0]*7    # 星をためる数が満タンかそうでないかを保存
 
 # setup関数
 def setup(): 
@@ -260,10 +260,7 @@ def draw_name():
     line(name_point[2][3][0], name_point[2][3][1], name_point[2][4][0], name_point[2][4][1])
     line(name_point[2][4][0], name_point[2][4][1], name_point[2][5][0], name_point[2][5][1])
     # Iの描写
-    line(name_point[3][0][0], name_point[3][0][1], name_point[3][1][0], name_point[3][1][1])
-    line(name_point[3][1][0], name_point[3][1][1], name_point[3][2][0], name_point[3][2][1])
-    line(name_point[3][1][0], name_point[3][1][1], name_point[3][3][0], name_point[3][3][1])  
-    line(name_point[3][4][0], name_point[3][4][1], name_point[3][5][0], name_point[3][5][1])
+    line(name_point[3][0][0], name_point[3][0][1], name_point[3][1][0], name_point[3][1][1])  
 
 # 星に関する配列の初期化
 def set_stars():
@@ -306,19 +303,21 @@ def draw_stars():
 # 名前の線の先に当たったことをカウンタに記録する関数
 def check_touch_name(i):
     global stars
-    if (stars[0][i]>=name_point[0][0][0]-10 and stars[0][i]<=name_point[0][0][0]+10) and (stars[1][i]>=name_point[0][0][1]-5 and stars[1][i]<=name_point[0][0][1]+5) and name_hit_counter[0]==0: # Y1
+    if (stars[0][i]>=name_point[0][0][0]-10 and stars[0][i]<=name_point[0][0][0]+10) and (stars[1][i]>=name_point[0][0][1]-5 and stars[1][i]<=name_point[0][0][1]+5) and limit_counter[0]==0: # Y1
         stars[3][i]=0
-    elif (stars[0][i]>=name_point[0][3][0]-10 and stars[0][i]<=name_point[0][3][0]+10) and (stars[1][i]>=name_point[0][3][1]-7 and stars[1][i]<=name_point[0][3][1]+5) and name_hit_counter[1]==0: # Y2
+    elif (stars[0][i]>=name_point[0][3][0]-10 and stars[0][i]<=name_point[0][3][0]+10) and (stars[1][i]>=name_point[0][3][1]-7 and stars[1][i]<=name_point[0][3][1]+5) and limit_counter[1]==0: # Y2
         stars[3][i]=1
-    elif (stars[0][i]>=name_point[1][0][0]-7 and stars[0][i]<=name_point[1][0][0]+7) and (stars[1][i]>=name_point[1][0][1]-5 and stars[1][i]<=name_point[1][0][1]+5) and name_hit_counter[2]==0: # U1
+    elif (stars[0][i]>=name_point[1][0][0]-7 and stars[0][i]<=name_point[1][0][0]+7) and (stars[1][i]>=name_point[1][0][1]-5 and stars[1][i]<=name_point[1][0][1]+5) and limit_counter[2]==0: # U1
         stars[3][i]=2
-    elif (stars[0][i]>=name_point[1][4][0]-7 and stars[0][i]<=name_point[1][4][0]+7) and (stars[1][i]>=name_point[1][4][1]-5 and stars[1][i]<=name_point[1][4][1]+5) and name_hit_counter[3]==0: # U2
+    elif (stars[0][i]>=name_point[1][4][0]-7 and stars[0][i]<=name_point[1][4][0]+7) and (stars[1][i]>=name_point[1][4][1]-5 and stars[1][i]<=name_point[1][4][1]+5) and limit_counter[3]==0: # U2
         stars[3][i]=3
-    elif (stars[0][i]>=name_point[2][0][0]-10 and stars[0][i]<=name_point[2][0][0]+10) and (stars[1][i]>=name_point[2][0][1]-5 and stars[1][i]<=name_point[2][0][1]+5) and name_hit_counter[4]==0: # K1
+    elif (stars[0][i]>=name_point[2][0][0]-10 and stars[0][i]<=name_point[2][0][0]+10) and (stars[1][i]>=name_point[2][0][1]-5 and stars[1][i]<=name_point[2][0][1]+5) and limit_counter[4]==0: # K1
         stars[3][i]=4
-    elif (stars[0][i]>=name_point[2][2][0]-10 and stars[0][i]<=name_point[2][2][0]+10) and (stars[1][i]>=name_point[2][2][1]-5 and stars[1][i]<=name_point[2][2][1]+5) and name_hit_counter[5]==0: # K2
+    elif (stars[0][i]>=name_point[2][2][0]-10 and stars[0][i]<=name_point[2][2][0]+10) and (stars[1][i]>=name_point[2][2][1]-5 and stars[1][i]<=name_point[2][2][1]+5) and limit_counter[5]==0: # K2
         stars[3][i]=5
-
+    elif (stars[0][i]>=name_point[3][0][0]-7 and stars[0][i]<=name_point[3][0][0]+7)and (stars[1][i]>=name_point[3][0][1]-5 and stars[1][i]<=name_point[3][0][1]+5) and limit_counter[6]==0: # I
+        stars[3][i]=6
+        
 # check_name関数で感知された場合移動する角度を変更する関数
 def change_stars(i):
     global stars, dstars
@@ -353,7 +352,12 @@ def change_stars(i):
         if stars[1][i]>=name_point[2][3][1]-(name_hit_count[5]*20):
             dstars[i]=0 # 星を停止させる
         else:
-            stars[2][i] = 40    
+            stars[2][i] = 40
+    if stars[3][i]==6:
+        if stars[1][i]>=name_point[3][1][1]-(name_hit_count[6]*20):
+            dstars[i]=0 # 星を停止させる
+        else:
+            stars[2][i]=0
 
 # 星同士がぶつかったときに角度を変更する関数
 def check_hit(i):
@@ -400,23 +404,14 @@ def check_wall(w, h, i):
 # 名前の欄に星が蓄えられる数が限界かどうかを感知する関数
 def count_name_hit(i):
     global name_hit_cunt, name_hit_counter
-    for j in range(6):
+    limit_name = [4, 4, 7, 9, 3, 3, 9]
+    for j in range(7):
         if stars[4][i]==0 and stars[3][i]==j:
             name_hit_count[j]+=1 # 名前に当たったときに１増やす
             stars[4][i]=1        # 名前に当たったことを記録
         # 蓄えられる数を各段階によって超えたかを感知し超えたなら変数に設定する
-        if name_hit_count[0]>4:
-            name_hit_counter[0]=1
-        if name_hit_count[1]>4:
-            name_hit_counter[1]=1
-        if name_hit_count[2]>7:
-            name_hit_counter[2]=1
-        if name_hit_count[3]>9:
-            name_hit_counter[3]=1
-        if name_hit_count[4]>3:
-            name_hit_counter[4]=1
-        if name_hit_count[5]>3:
-            name_hit_counter[5]=1
+        if name_hit_count[j]>limit_name[j]:
+            limit_counter[j]=1
 
 # ボタンを押したときの処理をする関数
 def keyPressed():
