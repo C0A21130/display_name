@@ -29,7 +29,7 @@ name_point = [[[100,200],[120,300],[145,300],[210,200],[100, 400]], [[250, 200],
 moon = [[0, 0, 50], [0, 0, 40]]  # 三日月の座標
 
 # 星の座標と移動幅
-star_n = 80 # 星の数を保存
+star_n = 100 # 星の数を保存
 stars = [[0]*star_n, [0]*star_n, [0]*star_n, [100]*star_n, [0]*star_n] # 星のxy座標と角度とどこの部分に接触したかを保存
 dstars = [1]*star_n      # 星の移動する数を保存
 name_hit_count = [-1]*7  # 星が名前の先端についた数を保存
@@ -42,8 +42,8 @@ def setup():
     size(800, 600) # 800X600のウィンドウを作成
     line_point = [[40, 40], [width-40, 40], [width-40, height-40], [40, height-40]] # 目標とする線の座標を設定
     line_pos = [[40, 40], [width-40, 40], [width-40, height-40], [40, height-40]]   # 現在の線の座標を設定
-    set_window() # 窓の座標と色を設定 
-    set_stars()  # 星の座標と状態を設定
+    set_window()   # 窓の座標と色を設定 
+    set_stars()    # 星の座標と状態を設定
 
 # draw関数
 def draw(): 
@@ -113,13 +113,13 @@ def draw_build(mode):
     noStroke()
     fill("#eeeeee")
     if mode==1: # ビルを時間変位によって描写するモードであることを感知
-        rect(buil_pos[0][0], buil_pos[0][1], buil_pos[0][2], buil_pos[0][3]*rate) 
-        rect(buil_pos[1][0], buil_pos[1][1], buil_pos[1][2], buil_pos[1][3]*rate) 
-        rect(buil_pos[2][0], buil_pos[2][1], buil_pos[2][2], buil_pos[2][3]*rate)
+        rect(buil_pos[0][0], buil_pos[0][1], buil_pos[0][2], buil_pos[0][3]*rate) # 左側のビルを描写
+        rect(buil_pos[1][0], buil_pos[1][1], buil_pos[1][2], buil_pos[1][3]*rate) # 真ん中のビルを描写
+        rect(buil_pos[2][0], buil_pos[2][1], buil_pos[2][2], buil_pos[2][3]*rate) # 右側のビルを描写
     elif mode==2: # ビルを常に描写するモードであることを感知
-        rect(buil_pos[0][0], buil_pos[0][1], buil_pos[0][2], buil_pos[0][3]) 
-        rect(buil_pos[1][0], buil_pos[1][1], buil_pos[1][2], buil_pos[1][3]) 
-        rect(buil_pos[2][0], buil_pos[2][1], buil_pos[2][2], buil_pos[2][3]) 
+        rect(buil_pos[0][0], buil_pos[0][1], buil_pos[0][2], buil_pos[0][3])      # 左側のビルを描写
+        rect(buil_pos[1][0], buil_pos[1][1], buil_pos[1][2], buil_pos[1][3])      # 真ん中側のビルを描写
+        rect(buil_pos[2][0], buil_pos[2][1], buil_pos[2][2], buil_pos[2][3])      # 右側のビルを描写
     draw_build_sub() # ３番ビルの左側を削る
 
 # 一番右のビルの角を削る関数
@@ -143,10 +143,10 @@ def draw_moon():
     m = float(minute()) # 今の分を変数mに代入
     x = 50+700*(h/24)   # 月のx座標を計算
     y = 40+30*(m/60)    # 月のy座標を計算
-    moon[0][0] = x   # 月の光のx座標
-    moon[1][0] = x-5 # 月の影のx座標
-    moon[0][1] = y   # 月の光のy座標
-    moon[1][1] = y-5 # 月の影のy座標
+    moon[0][0] = x      # 月の光のx座標
+    moon[1][0] = x-5    # 月の影のx座標
+    moon[0][1] = y      # 月の光のy座標
+    moon[1][1] = y-5    # 月の影のy座標
     noStroke()
     fill("#ffff7f")
     ellipse(moon[0][0], moon[0][1], moon[0][2], moon[0][2]) # 月の光の部分を表示
@@ -160,21 +160,21 @@ def set_window():
     # 窓のY座標を設定
     for i in range(20):
         if i<=9:
-            window[0][1][i] = window_init_pos[0][1]+50*i # １番ビルの左側のy座標を設定
-            window[1][1][i] = window_init_pos[1][1]+55*i # ２番ビルの左側のy座標を設定
-            window[2][1][i] = window_init_pos[2][1]+80*i # ３番ビルの左側のy座標を設定
+            window[0][1][i] = window_init_pos[0][1]+50*i # 左側のビルの左側のy座標を設定
+            window[1][1][i] = window_init_pos[1][1]+55*i # 真ん中のビルの左側のy座標を設定
+            window[2][1][i] = window_init_pos[2][1]+80*i # 右のビルの左側のy座標を設定
         else:
-            window[0][1][i] = window_init_pos[0][1]+50*(i-10) # １番ビルの右側のy座標を設定
-            window[1][1][i] = window_init_pos[1][1]+55*(i-10) # ２番ビルの右側のy座標を設定
-            window[2][1][i] = window_init_pos[2][1]+80*(i-10) # ３番ビルの右側のy座標を設定
-        window[0][2][i] = change_window_color() # １番ビルの色を決定
-        window[1][2][i] = change_window_color() # ２番ビルの色を決定
-        window[2][2][i] = change_window_color() # ３番ビルの色を決定
+            window[0][1][i] = window_init_pos[0][1]+50*(i-10) # 左側のビルの右側のy座標を設定
+            window[1][1][i] = window_init_pos[1][1]+55*(i-10) # 真ん中のビルの右側のy座標を設定
+            window[2][1][i] = window_init_pos[2][1]+80*(i-10) # 右側のビルの右側のy座標を設定
+        window[0][2][i] = change_window_color() # 左側のビルの窓の色を決定
+        window[1][2][i] = change_window_color() # 真ん中のビルの窓の色を決定
+        window[2][2][i] = change_window_color() # 右側のビルの窓の色を決定
     # 窓のX座標を設定
     for n in range(2):
-        window[0][0][n] = window_init_pos[0][0]+100*n # １番ビルのx座標を設定
-        window[1][0][n] = window_init_pos[1][0]+100*n # ２番ビルのx座標を設定
-        window[2][0][n] = window_init_pos[2][0]+110*n # ３番ビルのx座標を設定
+        window[0][0][n] = window_init_pos[0][0]+100*n # 左側のビルのx座標を設定
+        window[1][0][n] = window_init_pos[1][0]+100*n # 真ん中のビルのx座標を設定
+        window[2][0][n] = window_init_pos[2][0]+110*n # 右側のビルのx座標を設定
         
 # 窓の描写をする関数
 def draw_window(mode):
@@ -182,23 +182,23 @@ def draw_window(mode):
         for i in range(20):
             a = 0 if i<=9 else 1
             fill(window[0][2][i])
-            rect(window[0][0][a], window[0][1][i], 30, 30) # １番ビルに窓を表示
+            rect(window[0][0][a], window[0][1][i], 30, 30) # 左側のビルに窓を表示
     elif mode==2: # 左側と右側のビルに窓を描写
         for i in range(20):
             a = 0 if i<=9 else 1 
             fill(window[0][2][i])
-            rect(window[0][0][a], window[0][1][i], 30, 30) # １番ビルに窓を表示
+            rect(window[0][0][a], window[0][1][i], 30, 30) # 左側のビルに窓を表示
             fill(window[2][2][i])
-            rect(window[2][0][a], window[2][1][i], 40, 40) # ３番ビルに窓を表示  
+            rect(window[2][0][a], window[2][1][i], 40, 40) # 右側のビルに窓を表示  
     elif mode==3: # 全てのビルに窓を描写
         for i in range(20):
             a = 0 if i<=9 else 1
             fill(window[0][2][i])
-            rect(window[0][0][a], window[0][1][i], 30, 30) # １番ビルに窓を表示
+            rect(window[0][0][a], window[0][1][i], 30, 30) # 左側のビルに窓を表示
             fill(window[1][2][i])
-            rect(window[1][0][a], window[1][1][i], 25, 25) # ２番ビルに窓を表示
+            rect(window[1][0][a], window[1][1][i], 25, 25) # 真ん中のビルに窓を表示
             fill(window[2][2][i])
-            rect(window[2][0][a], window[2][1][i], 40, 40) # ３番ビルに窓を表示
+            rect(window[2][0][a], window[2][1][i], 40, 40) # 右側のビルに窓を表示
     draw_build_sub() # 右側のビルの左上側を削る
 
 # 名前を描写する前のエフェクトを描写する関数      
@@ -266,7 +266,7 @@ def draw_name():
 def set_stars():
     global stars, dstars
     for i in range(star_n): # 星の数だけ繰り返す
-        stars[0][i] = random(15, 780)     # 星の横の座標を設定
+        stars[0][i] = random(15, 780)    # 星の横の座標を設定
         stars[1][i] = random(11, 100)    # 星の縦の座標を設定
 
 # 星の描画
@@ -277,9 +277,9 @@ def draw_stars():
     for i in range(star_n): # 星の数だけ繰り返す 
         if frameCount%2==0: # フレームカウントが偶数の時に実行
             if stars[2][i]<0:
-                stars[2][i] += 1
+                stars[2][i] += 1 # 描画されている星の角度が正のとき角度を1増やす
             elif stars[2][i]>0:
-                stars[2][i] -= 1
+                stars[2][i] -= 1 # 描画されている星の角度が負のとき角度を1減らす
         check_wall(width, height, i) # 壁に衝突したときの処理を実行する関数を実行
         check_touch_name(i)     # 名前の端に衝突したときに処理を実行する関数を実行
         count_name_hit(i)       # 名前の欄に星が蓄えられる数が限界かどうかを感知する関数を実行
@@ -288,7 +288,7 @@ def draw_stars():
         stars[1][i] += dstars[i]*sin(radians(stars[2][i]+90)) # 星のy座標の中心を変更
         x = [0]*5 # 星の頂点のx座標を初期化
         y = [0]*5 # 星の頂点のy座標を初期化
-        for n in range(5):
+        for n in range(5): # 星の頂点の座標を設定
             x[n]=stars[0][i]+13*cos(radians(72*n+(90+stars[2][i]))) # 星の頂点のx座標を設定
             y[n]=stars[1][i]-13*sin(radians(72*n+(90+stars[2][i]))) # 星の頂点のy座標を設定
         # 決められた座標に星を描く
@@ -300,7 +300,7 @@ def draw_stars():
         vertex(x[3], y[3])
         endShape()
 
-# 名前の線の先に当たったことをカウンタに記録する関数
+# 名前の各点の先に接触したことをカウンタに記録する関数
 def check_touch_name(i):
     global stars
     if (stars[0][i]>=name_point[0][0][0]-10 and stars[0][i]<=name_point[0][0][0]+10) and (stars[1][i]>=name_point[0][0][1]-5 and stars[1][i]<=name_point[0][0][1]+5) and limit_counter[0]==0: # Y1
@@ -332,7 +332,7 @@ def change_stars(i):
         if stars[1][i]>=name_point[0][4][1]-(name_hit_count[1]*20): # Y2
             dstars[i]=0 # 星を停止させる
         else:
-            stars[2][i] = 30
+            stars[2][i] = 27
     if stars[3][i]==2:
         if stars[1][i]>=name_point[1][1][1]-(name_hit_count[2]*20): # U1
             dstars[i]=0 # 星を停止させる
@@ -404,19 +404,19 @@ def check_wall(w, h, i):
 # 名前の欄に星が蓄えられる数が限界かどうかを感知する関数
 def count_name_hit(i):
     global name_hit_cunt, name_hit_counter
-    limit_name = [4, 9, 7, 9, 9, 3, 9]
+    limit_name = [4, 9, 7, 9, 9, 3, 9] # 名前の各点にためられる数
     for j in range(7):
         if stars[4][i]==0 and stars[3][i]==j:
             name_hit_count[j]+=1 # 名前に当たったときに１増やす
             stars[4][i]=1        # 名前に当たったことを記録
         # 蓄えられる数を各段階によって超えたかを感知し超えたなら変数に設定する
-        if name_hit_count[j]>limit_name[j]:
+        if name_hit_count[j]>limit_name[j]: # 各点の基準を超えたことを確認して処理
             limit_counter[j]=1
 
 # ボタンを押したときの処理をする関数
 def keyPressed():
     global stars
-    if key=="p":
+    if key=="p": # pボタンを押したときに写真をとる
         save("report.png")
     if key=="a" and counter==3: # aボタンを押したときに地面から星を打ち上げる
         for i in range(star_n):
